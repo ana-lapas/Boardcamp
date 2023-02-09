@@ -1,10 +1,10 @@
 import { db } from "../database/database.connection.js";
-import { newCustomerSchema } from "../schemas/customer.schemas.js";
+import { customerSchema } from "../schemas/customer.schemas.js";
 
-export async function validateNewCustomer(req,res,next){
-    const newCustomer = req.body;
+export async function validateCustomer(req,res,next){
+    const customer = req.body;
     const { cpf } = req.body;
-    const { error } = newCustomerSchema.validate(newCustomer, { abortEarly: false });
+    const { error } = customerSchema.validate(customer, { abortEarly: false });
 
     if (error) {
         const errors = error.details.map(detail => detail.message);
@@ -20,6 +20,6 @@ export async function validateNewCustomer(req,res,next){
         res.status(500).send(err.message);
         return;
     }
-    res.locals.newCustomer = newCustomer;
+    res.locals.customer = customer;
     next();
-}
+};

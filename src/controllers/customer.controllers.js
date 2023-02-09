@@ -28,10 +28,25 @@ export async function getCustomerId(req, res) {
 };
 
 export async function postCustomer(req, res) {
-    const { name, phone, cpf, birthday } = res.locals.newCustomer;
+    const { name, phone, cpf, birthday } = res.locals.customer;
     try {
         await db.query(`INSERT INTO customers (name,phone,cpf,birthday) VALUES ($1,$2,$3,$4)`, [name, phone, cpf, birthday]);
         return res.sendStatus(201);
+
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+};
+
+export async function putCustomer(req, res) {
+    const { name, phone, cpf, birthday } = res.locals.customer;
+    const { id } = req.params;
+    try {
+        await db.query(`UPDATE customers SET name=$1 WHERE id=$2`, [name,id]);
+        await db.query(`UPDATE customers SET phone=$1 WHERE id=$2`, [phone,id]);
+        await db.query(`UPDATE customers SET cpf=$1 WHERE id=$2`, [cpf,id]);
+        await db.query(`UPDATE customers SET birthday=$1 WHERE id=$2`, [birthday,id]);
+        return res.sendStatus(200);
 
     } catch (err) {
         return res.status(500).send(err.message);
