@@ -3,9 +3,8 @@ import { customerSchema } from "../schemas/customer.schemas.js";
 import dayjs from "dayjs";
 
 export async function validateCustomer(req,res,next){
-    const{name, cpf, phone, birthday }= req.body;
-    const formatBirthday = dayjs(birthday).format('YYYY-MM-DD');
-    const customer = {name, cpf, phone, birthday: formatBirthday};
+    const customer = req.body;
+    const{ cpf }= req.body;    
     
     const { error } = customerSchema.validate(customer, { abortEarly: false });
 
