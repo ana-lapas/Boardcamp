@@ -57,14 +57,12 @@ export async function finishRent(req, res) {
     try {
         const rentInfo = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
         const gameInfo = await db.query(`SELECT * FROM games WHERE id=$1`, [rentInfo.rows[0].gameId]);
-        const finishDate = dayjs().format('YYYY-MM-DD');
-        const diference = new Date(finishDate) - new Date(rentInfo.rows[0].rentDate);
-        const daysPassed = Math.round(diference / (1000 * 60 * 60 * 24));
-        const diferenceSecond = finishDate - (rentInfo.rows[0].rentDate + rentInfo.rows[0].daysRented);
-        const newDelayFee = null;
-        if (daysPassed > rentInfo.rows[0].daysRented) {
-            newDelayFee = diferenceSecond * gameInfo.rows[0].pricePerDay;
-        };
+        const diference = new Date().getTime() - new Date(rental.rentDate).getTime();
+        const difDays = Math.floor(diference / (24 * 3600 * 1000));
+        if (difDays > rentInfo.rows[0].daysRented) {
+            const daysPassed = difDays - rentInfo.rows[0].daysRented;
+            delayFee = daysPassed * gameInfo.rows[0].pricePerDay;
+        }
 
         await db.query(`UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3`, [finishDate, newDelayFee, id]);
         return res.sendStatus(200);
