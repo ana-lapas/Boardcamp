@@ -50,3 +50,24 @@ export async function postRent(req, res) {
     }
 };
 
+export async function finishRent(req, res) {
+    const { id } = req.params;
+    
+    try {
+        const rentInfo = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
+        const finishDate = dayjs().format('YYYY-MM-DD');
+        const daysPassed = rentInfo.rows[0].rentDate - finishDate;
+        let newDelayFee;
+        if (daysPassed > 0){
+            newDelayFee = daysPassed*rentInfo.rows[0].originalPrice;
+        } else {
+            newDelayFee = null;
+        };        
+        await db.query(`UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3`,[finishDate,newDelayFee,id]);
+        return res.sendStatus(200);
+
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+};
+

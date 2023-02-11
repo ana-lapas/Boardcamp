@@ -34,3 +34,19 @@ export async function validateNewRent(req, res, next) {
     res.locals.newRent = newRent;
     next();
 }
+export async function validateFinishRent(req,res,next){
+    const { id } = req.params;
+    try {
+        const existingRent = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
+        if (existingRent.rows.length === 0) {
+            return res.sendStatus(404);
+        }
+        if(existingRent.rows[0].returnDate != null ){
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        res.status(500).send(err.message);
+        return;
+    }
+    next()
+}
