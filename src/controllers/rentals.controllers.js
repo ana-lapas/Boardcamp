@@ -21,10 +21,9 @@ export async function getRentals(req, res) {
             },
             game:{
                 id: rent.gameId,
-                name: existingGames.rows[rent.gameId-1].name
+                name: existingGames.rows[gameId-1].name
             }
-    })});
-        
+    })});        
         res.status(200).send(putTogether);
         return;
 
