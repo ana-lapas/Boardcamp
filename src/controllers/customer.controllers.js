@@ -29,6 +29,7 @@ export async function getCustomerId(req, res) {
 
 export async function postCustomer(req, res) {
     const { name, phone, cpf, birthday } = res.locals.customer;
+    console.log(name, phone, cpf, birthday)
     try {
         await db.query(`INSERT INTO customers (name,phone,cpf,birthday) VALUES ($1,$2,$3,$4)`, [name, phone, cpf, birthday]);
         return res.sendStatus(201);
@@ -40,10 +41,11 @@ export async function postCustomer(req, res) {
 
 export async function putCustomer(req, res) {
     const { name, phone, cpf, birthday } = res.locals.customer;
-    const { id } = res.locals.id;
-    console.log(birthday)
+    const { id } = req.params;
     try {        
-        await db.query('UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5', [name,phone,cpf,birthday,id]);
+        console.log("Variaveis recebidas no putCustomer", {name, phone, cpf, birthday})
+        await db.query('UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5', 
+        [name,phone,cpf,birthday,id]);
         return res.sendStatus(200);
     } catch (err) {
         return res.status(500).send(err.message);

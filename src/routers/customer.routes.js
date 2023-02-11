@@ -6,5 +6,6 @@ const customerRouter = Router();
 customerRouter.get("/customers", getCustomers);
 customerRouter.post("/customers", validateCustomer, postCustomer);
 customerRouter.get("/customers/:id", getCustomerId);
-customerRouter.put("/customers/:id", updateValidation, putCustomer );
+customerRouter.put("/customers/:id", updateValidation, putCustomer);
+
 export default customerRouter;
