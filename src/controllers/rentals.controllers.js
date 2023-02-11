@@ -55,14 +55,12 @@ export async function finishRent(req, res) {
     
     try {
         const rentInfo = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
+        console.log(rentInfo.rows)
         const finishDate = dayjs().format('YYYY-MM-DD');
-        const daysPassed = rentInfo.rows[0].rentDate - finishDate;
-        let newDelayFee;
-        if (daysPassed > 0){
-            newDelayFee = daysPassed*rentInfo.rows[0].originalPrice;
-        } else {
-            newDelayFee = null;
-        };        
+        const diference = new Date(rentInfo.rows[0].rentDate) - new Date(finishDate);
+        const daysPassed = Math.round(diference / (1000 * 60 * 60 * 24));
+        const newDelayFee = daysPassed > 0 ? daysPassed * rentInfo.rows[0].originalPrice : null;        
+        console.log({diference, daysPassed, finishDate, newDelayFee, id})
         await db.query(`UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3`,[finishDate,newDelayFee,id]);
         return res.sendStatus(200);
 
