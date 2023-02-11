@@ -39,11 +39,15 @@ export async function validateCustomer(req,res,next){
     
     try {
         const existingCustomer = await db.query(`SELECT * FROM customers WHERE id=$1`, [id]);
+        
         if (existingCustomer.rows.length === 0) {
             return res.sendStatus(404);
         }
-        const checkCPF = await db.query(`SELECT * FROM customers WHERE id=$1`, [id]);
-        if (checkCPF.rows[0].id != id) {
+        console.log("id do cliente existent",existingCustomer.rows )
+        console.log("id a ser atualizado",id )
+        const checkCPF = await db.query(`SELECT * FROM customers WHERE cpf=$1`, [existingCustomer.rows[0].cpf]);
+        console.log(checkCPF.rows.length )
+        if (checkCPF.rows.length > 2) {
             return res.sendStatus(409);
         }
     } catch (err) {
