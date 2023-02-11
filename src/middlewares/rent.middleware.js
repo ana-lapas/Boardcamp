@@ -21,7 +21,7 @@ export async function validateNewRent(req, res, next) {
             return res.sendStatus(400);
         }
         const checkNumberOfGames = existingGame.rows[0].stockTotal;
-        
+
         const checkNumberofGamesAlredyRented = await db.query(`SELECT * FROM rentals WHERE "gameId"=$1`, [gameId]);
         if (checkNumberofGamesAlredyRented.rows.length >= checkNumberOfGames) {
             return res.sendStatus(400);
@@ -34,14 +34,14 @@ export async function validateNewRent(req, res, next) {
     res.locals.newRent = newRent;
     next();
 }
-export async function validateFinishRent(req,res,next){
+export async function validateFinishRent(req, res, next) {
     const { id } = req.params;
     try {
         const existingRent = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
         if (existingRent.rows.length === 0) {
             return res.sendStatus(404);
         }
-        if(existingRent.rows[0].returnDate != null ){
+        if (existingRent.rows[0].returnDate != null) {
             return res.sendStatus(400);
         }
     } catch (err) {
@@ -49,4 +49,21 @@ export async function validateFinishRent(req,res,next){
         return;
     }
     next()
-}
+};
+export async function validateDeleteRent(req, res, next) {
+    const { id } = req.params;
+    try {
+        const existingRent = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
+
+        if (existingRent.rows.length === 0) {
+            return res.sendStatus(404);
+        }
+        if (existingRent.rows[0].returnDate == null) {
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        res.status(500).send(err.message);
+        return;
+    }
+    next()
+};
