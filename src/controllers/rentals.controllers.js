@@ -60,7 +60,7 @@ export async function finishRent(req, res) {
         const finishDate = dayjs().format('YYYY-MM-DD');
         const diference = new Date(rentInfo.rows[0].rentDate) - new Date(finishDate);
         const daysPassed = Math.round(diference / (1000 * 60 * 60 * 24));
-        const newDelayFee = daysPassed * gameInfo.rows[0].pricePerDay;
+        const newDelayFee = (daysPassed > 0 ? daysPassed * gameInfo.rows[0].pricePerDay : null );
         await db.query(`UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3`, [finishDate, newDelayFee, id]);
         return res.sendStatus(200);
 
