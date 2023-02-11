@@ -3,8 +3,29 @@ import { db } from "../database/database.connection.js";
 
 export async function getRentals(req, res) {
     try {
-        const existingRentals = await db.query("SELECT * FROM rentals");
-        res.status(200).send(existingRentals.rows);
+    const existingRentalsCustomer = await db.query(`SELECT * FROM rentals JOIN customers ON rentals."customerId"=customers.id`);
+    const  existingGames = await db.query(`SELECT * FROM rentals JOIN games ON rentals."gameId"= games.id`);
+    const putTogether = existingRentalsCustomer.rows.map((rent)=>{
+         return({
+            id: rent.id,
+            customerId: rent.customerId,
+            gameId: rent.gameId,
+            rentDate: rent.rentDate,
+            daysRented: rent.daysRented,
+            returnDate: rent.returnDate,
+            originalPrice: rent.originalPrice,
+            delayFee: rent.delayFee,
+            customer: {
+                id: rent.customerId,
+                name: rent.name,
+            },
+            game:{
+                id: rent.gameId,
+                name: existingGames.rows[rent.gameId-1].name
+            }
+    })});
+        
+        res.status(200).send(putTogether);
         return;
 
     } catch (err) {

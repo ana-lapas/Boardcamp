@@ -30,6 +30,7 @@ export async function updateValidation(req, res, next) {
     const { id } = req.params;
     const { cpf } = req.body;
     const customer = req.body;
+    console.log(customer)
     const { error } = customerSchema.validate(customer, { abortEarly: false });
 
     if (error) {
