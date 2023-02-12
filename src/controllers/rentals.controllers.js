@@ -53,11 +53,8 @@ export async function finishRent(req, res) {
         const rentInfo = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
         const gameInfo = await db.query(`SELECT * FROM games WHERE id=$1`, [rentInfo.rows[0].gameId]);
         const finishDate = dayjs().format('YYYY-MM-DD');
-        console.log(finishDate)
         const diference = new Date(finishDate) - new Date(rentInfo.rows[0].rentDate);
-        console.log(diference)
         const daysPassed = Math.round(diference / (1000 * 60 * 60 * 24));
-        console.log(daysPassed)
         const newDelayFee = null;
         if (daysPassed > rentInfo.rows[0].daysRented) {
             newDelayFee = daysPassed * gameInfo.rows[0].pricePerDay;
