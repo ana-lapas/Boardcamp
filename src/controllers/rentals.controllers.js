@@ -54,7 +54,7 @@ export async function finishRent(req, res) {
         const gameInfo = await db.query(`SELECT * FROM games WHERE id=$1`, [rentInfo.rows[0].gameId]);
         const finishDate = dayjs().format('YYYY-MM-DD');
         console.log(finishDate)
-        const diference = new Date(rentInfo.rows[0].rentDate) - new Date(finishDate);
+        const diference = new Date(finishDate) - new Date(rentInfo.rows[0].rentDate);
         console.log(diference)
         const daysPassed = Math.round(diference / (1000 * 60 * 60 * 24));
         console.log(daysPassed)
