@@ -3,11 +3,9 @@ import { db } from "../database/database.connection.js";
 export async function getCustomers(req, res) {
     try {
         const existingCustomers = await db.query("SELECT * FROM customers");
-        res.status(200).send(existingCustomers.rows);
-        return;
+        return res.status(200).send(existingCustomers.rows);
     } catch (err) {
-        res.status(500).send(err.message);
-        return;
+        return res.status(500).send(err.message);
     }
 };
 
@@ -16,14 +14,11 @@ export async function getCustomerId(req, res) {
     try {
         const existingCustomer = await db.query(`SELECT * FROM customers WHERE id=$1`, [id]);
         if (existingCustomer.rows.length === 0) {
-            res.sendStatus(404);
-            return;
+            return res.sendStatus(404);
         }
-        res.status(200).send(existingCustomer.rows[0]);
-        return;
+        return res.status(200).send(existingCustomer.rows[0]);
     } catch (err) {
-        res.status(500).send(err.message);
-        return;
+        return res.status(500).send(err.message);
     }
 };
 
@@ -32,7 +27,6 @@ export async function postCustomer(req, res) {
     try {
         await db.query(`INSERT INTO customers (name,phone,cpf,birthday) VALUES ($1,$2,$3,$4)`, [name, phone, cpf, birthday]);
         return res.sendStatus(201);
-
     } catch (err) {
         return res.status(500).send(err.message);
     }

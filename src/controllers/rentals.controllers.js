@@ -27,16 +27,13 @@ export async function getRentals(req, res) {
         });
         res.status(200).send(putTogether);
         return;
-
     } catch (err) {
-        res.status(500).send(err.message);
-        return;
+        return res.status(500).send(err.message);
     }
 };
 
 export async function postRent(req, res) {
     const { customerId, gameId, daysRented } = res.locals.newRent;
-
     try {
         const gameInfo = await db.query(`SELECT * FROM games WHERE id=$1`, [gameId]);
         const rentDate = dayjs().format('YYYY-MM-DD');
@@ -45,7 +42,6 @@ export async function postRent(req, res) {
         const delayFee = null;
         await db.query(`INSERT INTO rentals ("customerId","gameId","rentDate","daysRented","returnDate","originalPrice","delayFee") VALUES ($1,$2,$3,$4,$5,$6,$7)`, [customerId, gameId, rentDate, daysRented, returnDate, originalPrice, delayFee]);
         return res.sendStatus(201);
-
     } catch (err) {
         return res.status(500).send(err.message);
     }
@@ -53,20 +49,21 @@ export async function postRent(req, res) {
 
 export async function finishRent(req, res) {
     const { id } = req.params;
-
     try {
         const rentInfo = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
         const gameInfo = await db.query(`SELECT * FROM games WHERE id=$1`, [rentInfo.rows[0].gameId]);
         const finishDate = dayjs().format('YYYY-MM-DD');
+        console.log(finishDate)
         const diference = new Date(rentInfo.rows[0].rentDate) - new Date(finishDate);
+        console.log(diference)
         const daysPassed = Math.round(diference / (1000 * 60 * 60 * 24));
+        console.log(daysPassed)
         const newDelayFee = null;
         if (daysPassed > rentInfo.rows[0].daysRented) {
             newDelayFee = daysPassed * gameInfo.rows[0].pricePerDay;
         }
         await db.query(`UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3`, [finishDate, newDelayFee, id]);
         return res.sendStatus(200);
-
     } catch (err) {
         return res.status(500).send(err.message);
     }
@@ -74,11 +71,9 @@ export async function finishRent(req, res) {
 
 export async function deleteRent(req, res) {
     const { id } = req.params;
-
     try {
         await db.query(`DELETE FROM rentals WHERE id=$1`, [id]);
         return res.sendStatus(200);
-
     } catch (err) {
         return res.status(500).send(err.message);
     }
