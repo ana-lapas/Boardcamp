@@ -57,23 +57,16 @@ export async function finishRent(req, res) {
     try {
         const rentInfo = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
         const gameInfo = await db.query(`SELECT * FROM games WHERE id=$1`, [rentInfo.rows[0].gameId]);
-        /*const finishDate = dayjs().format('YYYY-MM-DD');
-        console.log(finishDate)
-        const shouldBeFinalDate = new Date(rentInfo.rows[0].rentDate) + rentInfo.rows[0].daysRented;
-        console.log(shouldBeFinalDate)
-        const diference = new Date(finishDate) - new Date(shouldBeFinalDate);
-
+        const finishDate = dayjs().format('YYYY-MM-DD');
+        const diference = new Date(rentInfo.rows[0].rentDate) - new Date(finishDate);
         const daysPassed = Math.round(diference / (1000 * 60 * 60 * 24));
-        */
-        const finishDate = moment().format('YYYY-MM-DD');
-        const shouldbeFinishDate = moment(rentInfo.rows[0].rentDate, "YYYY-MM-DD").add(rentInfo.rows[0].daysRented, "days").format("YYYY-MM-DD");
-        const diference = moment(finishDate, "YYYY-MM-DD").diff(moment(shouldbeFinishDate, "YYYY-MM-DD"), "days");
         const newDelayFee = null;
-        if (diference > 0 ) {
-            newDelayFee = diference * gameInfo.rows[0].pricePerDay;
-        };
+        if (daysPassed > rentInfo.rows[0].daysRented) {
+            newDelayFee = daysPassed * gameInfo.rows[0].pricePerDay;
+        }
         await db.query(`UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3`, [finishDate, newDelayFee, id]);
         return res.sendStatus(200);
+
     } catch (err) {
         return res.status(500).send(err.message);
     }
