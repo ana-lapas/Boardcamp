@@ -36,6 +36,7 @@ export async function validateNewRent(req, res, next) {
 }
 export async function validateFinishRent(req, res, next) {
     const { id } = req.params;
+    
     try {
         const existingRent = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
         if (existingRent.rows.length === 0) {
